@@ -1,12 +1,3 @@
-"""Q2: async client for the meter's local REST API.
-
-Small, well-tested client library of the kind every Home Assistant
-integration is built on: GET the meter's status, map the answer onto
-MeterStatus, and translate every failure into one of our exceptions.
-
-Do NOT rename files, classes, exceptions or the constructor: the
-grader imports them by these exact names.
-"""
 
 import asyncio
 import json
@@ -69,12 +60,7 @@ def _parse_energy_wh(value):
 
 
 def _retry_after_seconds(value):
-    """Bonus: parse a 503's Retry-After header.
-
-    Returns the seconds to wait, or None when the header is missing or
-    unusable ("soon", "1.5", "-1" ...), in which case the normal delay
-    applies. Never more than 10 seconds.
-    """
+    
     if not isinstance(value, str):
         return None
     text = value.strip()
@@ -84,11 +70,7 @@ def _retry_after_seconds(value):
 
 
 async def _read_json(resp):
-    """Read the response body as JSON.
-
-    Anything unparseable becomes DeviceProtocolError. Connection/timeout
-    errors are NOT caught here -- they propagate so the caller can retry.
-    """
+    
     try:
         return json.loads(await resp.text())
     except ValueError as exc:  # includes json.JSONDecodeError
@@ -96,12 +78,11 @@ async def _read_json(resp):
 
 
 def _parse_status(data):
-    """Validate the 200 body and build a MeterStatus from it."""
+    
     if not isinstance(data, dict):
         raise DeviceProtocolError("expected a JSON object")
 
-    # State first: a booting device omits the other fields, and the
-    # support log says booting means UNAVAILABLE immediately, no retry.
+   
     state = data.get("state")
     if state == "booting":
         raise DeviceUnavailable("device reports state 'booting'")
@@ -182,7 +163,6 @@ class MeterClient:
         )
 
 
-# Bonus: LLM tool wrapper -------------------------------------------------
 
 TOOL_DEFINITION = {
     "name": "get_meter_status",
